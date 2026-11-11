@@ -1,0 +1,24 @@
+# ###########################################################################
+# templates/parameter.yml  —  DÉPÔT its-dp-fab-bdp-opportunite-managed (BDP)
+#
+# MODÈLE de CICD/deployment/parameter.yml, rempli par 03_remplir.py.
+#  - Le rendu est écrit HORS du dépôt ; recopie manuelle dans une PR revue.
+#  - Aucun GUID : le socle v1.5.0 refuse un GUID littéral dans replace_value
+#    (RULE_LITERAL_GUID). Les règles s'écrivent avec des variables fabric-cicd
+#    résolues au déploiement.
+#  - BDP (matrice v1.3) : deux familles de règles admises
+#      1. workspace courant : $workspace.$id, $items.<Type>.<nom>.$id (clé _ALL_) ;
+#      2. workspace Framework de l'environnement, par nom et par environnement :
+#         $workspace.FR - DP - <ENV> - FAB - Framework - MANAGED.$id
+#         $workspace.FR - DP - <ENV> - FAB - Framework - MANAGED.$items.<Type>.<nom>.$id
+#         (chaque item Framework visé doit figurer dans framework.items de dependencies.yml :
+#         proposition écrite par 03_remplir.py dans framework_items_bdp.yml).
+#    Toute autre référence inter-workspace est interdite (DEPS_CROSS_WORKSPACE_FORBIDDEN).
+#
+# Marqueur résolu par 03_remplir.py :
+#   <<REGLES_KEY_VALUE_REPLACE>> : deux règles (workspaceId + pipelineId/notebookId) par
+#   activité InvokePipeline / TridentNotebook relevée par 01_inventaire_github.py dont
+#   l'item appelé est identifié dans un fabric_<ENV>.json de 02 (BDP ou Framework).
+#   Les références non identifiées ou vers un autre workspace sont listées, jamais converties.
+# ###########################################################################
+key_value_replace: <<REGLES_KEY_VALUE_REPLACE>>

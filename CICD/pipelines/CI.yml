@@ -1,0 +1,58 @@
+# CI.yml — its-dp-fab-bdp-opportunite-managed (BDP Opportunite)
+# Pipeline Azure DevOps de CI (nom relevé dans l'ancienne CD BDP Opportunite :
+# « its-dp-fab-opportunite-managed-CI », SANS « bdp- » ; nom et casse exacts à confirmer dans ADO).
+# Template KPMG « Plateforme Technologique/CICD » CONSERVÉ : versioning, SonarQube,
+# publication de l'artefact « fabric » (consommé par CD.yml, sous-dossier « binaries »).
+# Le socle its-dp-fab-cicd-common v1.5.0 ne fournit aucun template CI pour les dépôts
+# consommateurs (CICD/pipelines/ci-common.yml = CI du socle lui-même) : pas de remplacement.
+# Changements par rapport à l'ancienne CI BDP Opportunite :
+#   - déclencheurs develop, release/* et main au lieu de feature/its/411581_industrialisation_chaine_cicd
+#     (v1.2 : develop → ITG, release/* → PPR, main → PRD) ;
+#   - filtre de l'artefact aligné sur les autres dépôts : « !/*.json » (entre guillemets).
+#     L'ancien filtre « !**/*.json », non quoté, était lu par YAML comme une étiquette (tag) et,
+#     interprété comme motif, aurait exclu TOUS les JSON, dont pipeline-content.json des items.
+# La validation de PR est portée par PR-Validation.yml (check GitHub obligatoire).
+# À vérifier (V-01) : le filtre « contents: !/*.json » ne doit pas exclure les fichiers
+# d'items ; la CD échoue explicitement (STRUCT_NO_ITEMS) si l'artefact est incomplet.
+# ── trigger — branches qui declenchent le build (develop / release/* / main, v1.2)
+trigger:
+  branches:
+    include:
+      - develop
+      - release/*
+      - main
+# ── pr — la validation de PR est portee par PR-Validation.yml
+pr: none
+
+# ── pool — image d'agent de build
+pool:
+  vmImage: "ubuntu-24.04"
+
+# ── resources — template KPMG 'Plateforme Technologique/CICD' conserve
+resources:
+  repositories:
+    - repository: CICD
+      name: "Plateforme Technologique/CICD"
+      type: git
+      ref: "refs/heads/main"
+
+# ── extends — etend le template CI KPMG (versioning, SonarQube, artefact 'fabric')
+extends:
+  template: PipelineTemplate.yaml@CICD
+  parameters:
+    versioning:
+      mode: legacy
+      major: 1
+      minor: 0
+    build:
+      sonarQube:
+        # Projet SonarQube BDP Opportunite, repris tel quel de l'ancienne CI (majuscules, sans « BDP ») :
+        # la clé doit rester celle du projet SonarQube existant.
+        projectKey: Discovery_DP-FAB-OPPORTUNITE-MANAGED
+        projectName: "[Discovery] DP FAB OPPORTUNITE MANAGED"
+        qualityGateName: "[Discovery] Starter"
+      steps:
+        - type: files
+          name: fabric
+          path: ./
+          contents: "!/*.json"

@@ -1,0 +1,39 @@
+# ###########################################################################
+# templates/config.yml  —  DÉPÔT its-dp-fab-bdp-opportunite-managed (BDP)
+#
+# MODÈLE de CICD/deployment/config.yml, rempli par 03_remplir.py.
+#  - Le rendu est écrit HORS du dépôt (dossier de sortie des scripts) ; il ne remplace
+#    jamais CICD/deployment/config.yml : la recopie se fait à la main, dans une PR revue.
+#  - Format imposé par le socle v1.5.0 : workspaces désignés par leur NOM exact
+#    (core.workspace, jamais workspace_id), clés DEV/ITG/PPR/PRD en MAJUSCULES.
+#
+# Marqueurs résolus par 03_remplir.py :
+#   <<WS_BDP_DEV>> … <<WS_BDP_PRD>> : nom du workspace BDP relevé par 02_fab_cli.py
+#                                     (fabric_<ENV>.json), sinon valeur de config.yml ;
+#   <<ITEM_TYPES_IN_SCOPE>>          : types des items relevés par 01_inventaire_github.py.
+# Un marqueur non résolu reste en place et est signalé.
+# ###########################################################################
+core:
+  workspace:
+    DEV: "<<WS_BDP_DEV>>"
+    ITG: "<<WS_BDP_ITG>>"
+    PPR: "<<WS_BDP_PPR>>"
+    PRD: "<<WS_BDP_PRD>>"
+  # Relatif à CICD/deployment/ : ../../fabric = dossier fabric/ à la racine du dépôt.
+  repository_directory: "../../fabric"
+  # Types relevés dans les fichiers .platform de fabric/ (un type absent n'est pas publié).
+  item_types_in_scope: <<ITEM_TYPES_IN_SCOPE>>
+  # À décommenter avec la première règle de parameter.yml :
+  # parameter: "parameter.yml"
+publish:
+  skip:
+    DEV: false
+    ITG: false
+    PPR: false
+    PRD: false
+unpublish:
+  skip:
+    DEV: true
+    ITG: true
+    PPR: true
+    PRD: true
